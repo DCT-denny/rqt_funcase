@@ -22,6 +22,7 @@ class ROSdata(QWidget):
     Mode_Start_Remote = 2
     Mode_Stop = -1
     updata_sensor = QtCore.pyqtSignal()
+    
     updata_arm = QtCore.pyqtSignal()
     def __init__(self,context):
         super(ROSdata, self).__init__()
@@ -79,7 +80,7 @@ class ROSdata(QWidget):
 
         self._sensor_value = [0, 0, 0, 0, 0, 0]
         self._arm_value=[0,0,0,0,0,0,0,0,0]
-        self._wallfuzzy_value =[0,0,0,0,0,0,0,0,0,0]
+        self._wallfuzzy_value =[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 
         self.subscriber_group()
         self.publisher_group()
@@ -93,6 +94,7 @@ class ROSdata(QWidget):
         self.pushButton_enter.clicked.connect(self.num_enter)
 
         self.updata_sensor.connect(self.slot_line)
+	
         self.updata_arm.connect(self.slot_arm)
 
 
@@ -148,10 +150,11 @@ class ROSdata(QWidget):
     def wallfuzzy_callback(self,msg):
         for i in range(0,10):
             self._wallfuzzy_value[i] = msg.data[i]
-        for i in range(0.10):
-            self.lcdNumberWallfuzzyList[i].dispaly(self._wallfuzzy_value[i])
-
-
+	for i in range(0,10):
+            
+            self.lcdNumberWallfuzzyList[i].display(self._wallfuzzy_value[i])
+	
+	 
     def line_callback(self,line_msg):
         """
         self.progressBar.connect(self.slot_line)
