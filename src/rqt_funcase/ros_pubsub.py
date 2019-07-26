@@ -105,7 +105,7 @@ class ROSdata(QWidget):
         rospy.Subscriber("/scan",LaserScan, self.laser_callback)
         rospy.Subscriber("/light_err",Float64, self.callback)
         rospy.Subscriber("/track_line_sensor",UInt8MultiArray, self.line_callback)
-        rospy.Subscriber("/wall_msg",Int16MultiArray, self.wall_callback)
+        rospy.Subscriber("/wall_msg",Float64MultiArray, self.wall_callback)
         rospy.Subscriber("/wall_fuzzy",Float64MultiArray, self.wallfuzzy_callback)
         rospy.Subscriber("/arm_msg",Int16MultiArray, self.arm_callback) #暫時不用
         rospy.Subscriber("/task_msg",Int16, self.task_callback)
