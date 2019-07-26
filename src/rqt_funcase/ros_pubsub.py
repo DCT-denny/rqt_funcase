@@ -14,7 +14,7 @@ from python_qt_binding.QtCore import *
 from python_qt_binding.QtGui import *
 from std_msgs.msg import Float64,Int16MultiArray,Int16,String,UInt8MultiArray
 from sensor_msgs.msg import LaserScan,Imu
-
+import tf
 
 class ROSdata(QWidget):
 
@@ -92,11 +92,11 @@ class ROSdata(QWidget):
         rospy.Subscriber("/light_err",Float64, self.callback)
         rospy.Subscriber("/track_line_sensor",UInt8MultiArray, self.line_callback)
         rospy.Subscriber("/wall_msg",Int16MultiArray, self.wall_callback)
-        rospy.Subscriber("/arm_msg",Int16MultiArray, self.arm_callback)
+        rospy.Subscriber("/arm_msg",Int16MultiArray, self.arm_callback) #暫時不用
         rospy.Subscriber("/task_msg",Int16, self.task_callback)
         rospy.Subscriber("/imu/data",Imu, self.imu_callback)
-        rospy.Subscriber("/arm_status",String, self.arm_status_callback)
-        rospy.Subscriber("/move",Int16MultiArray, self.move_callback)
+        rospy.Subscriber("/arm_status",String, self.arm_status_callback) #暫時不用
+        rospy.Subscriber("/move_it",Int16MultiArray, self.move_callback)
 
     def robot_start(self):
         if self.radioButton_AUTO.isChecked():
@@ -156,6 +156,7 @@ class ROSdata(QWidget):
         for i in range(0,6):
             self.progressBarList[i].setValue(ord(self._sensor_value[i]))
 
+    #暫時應該不用
     def arm_callback(self,arm_msg):
         for i in range(0,9):
             self._arm_value[i] = arm_msg.data[i]
@@ -167,6 +168,7 @@ class ROSdata(QWidget):
         for i in range(0,9):
             self.progressBarArmList[i].setValue(self._arm_value[i])
             self.lcdNumberArmList[i].dispaly(self._arm_value[i])
+    #暫時應該不用
 
     def num_clicked(self):
         sender = self.sender()
@@ -190,12 +192,17 @@ class ROSdata(QWidget):
 
 
     def task_callback(self,task_msg):
-        self.lcdNumber_task_num.display(task_msg)
+        self.lcdNumber_task_num.display(task_msg.data)
 
     def imu_callback(self,imu_msg):
-        self.lcdNumber_imu.display(imu_msg)
+        (r, p, y) = tf.transformations.euler_from_quaternion( \
+                    [imu_msg.orientation.x, imu_msg.orientation.y, imu_msg.orientation.z, \
+                     imu_msg.orientation.w])
+
+        angle=y*180/3.1415926
+        self.lcdNumber_imu.display(angle)
 
     def arm_status_callback(self,status_msg):
-        self.textEdit.setText(status_msg)
+        self.textEdit.setText(status_msg.data)
 
 
