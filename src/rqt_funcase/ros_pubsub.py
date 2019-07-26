@@ -146,6 +146,7 @@ class ROSdata(QWidget):
         self.lcdNumber_final_angle.display(wall_msg.data[1])
         self.lcdNumber_r_err.display(wall_msg.data[2])
         self.lcdNumber_angle_err.display(wall_msg.data[3])
+	self.lcdNumber_sum.display(wall_msg.data[4])
 
     def wallfuzzy_callback(self,msg):
         for i in range(0,10):
