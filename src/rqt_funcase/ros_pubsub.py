@@ -12,7 +12,7 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtWidgets import QWidget,QApplication
 from python_qt_binding.QtCore import *
 from python_qt_binding.QtGui import *
-from std_msgs.msg import Float64,Int16MultiArray,Int16,String,UInt8MultiArray
+from std_msgs.msg import Float64,Int16MultiArray,Int16,String,UInt8MultiArray,Float64MultiArray
 from sensor_msgs.msg import LaserScan,Imu
 import tf
 
@@ -53,6 +53,19 @@ class ROSdata(QWidget):
                                 self.lcdNumber_arm7,
                                 self.lcdNumber_arm8,
                                 self.lcdNumber_arm9]
+        self.lcdNumberWallfuzzyList=[self.lcdNumber_r_NB,
+                                   self.lcdNumber_r_NS,
+                                   self.lcdNumber_r_ZO,
+                                   self.lcdNumber_r_PS,
+                                   self.lcdNumber_r_PB,
+                                   self.lcdNumber_angle_NB,
+                                   self.lcdNumber_angle_NS,
+                                   self.lcdNumber_angle_ZO,
+                                   self.lcdNumber_angle_PS,
+                                   self.lcdNumber_angle_PB]
+
+
+
         self.pushButtonList=[self.pushButton_num0,
                                 self.pushButton_num1,
                                 self.pushButton_num2,
@@ -66,6 +79,7 @@ class ROSdata(QWidget):
 
         self._sensor_value = [0, 0, 0, 0, 0, 0]
         self._arm_value=[0,0,0,0,0,0,0,0,0]
+        self._wallfuzzy_value =[0,0,0,0,0,0,0,0,0,0]
 
         self.subscriber_group()
         self.publisher_group()
@@ -92,6 +106,7 @@ class ROSdata(QWidget):
         rospy.Subscriber("/light_err",Float64, self.callback)
         rospy.Subscriber("/track_line_sensor",UInt8MultiArray, self.line_callback)
         rospy.Subscriber("/wall_msg",Int16MultiArray, self.wall_callback)
+        rospy.Subscriber("/wall_fuzzy",Float64MultiArray, self.wallfuzzy_callback)
         rospy.Subscriber("/arm_msg",Int16MultiArray, self.arm_callback) #暫時不用
         rospy.Subscriber("/task_msg",Int16, self.task_callback)
         rospy.Subscriber("/imu/data",Imu, self.imu_callback)
@@ -125,10 +140,16 @@ class ROSdata(QWidget):
         self.lcdNumber_left_scan.display(msg.ranges[597]*100)
 
     def wall_callback(self,wall_msg):
-        self.lcdNumber_r_err.display(wall_msg.data[0])
-        self.lcdNumber_angle_err.display(wall_msg.data[1])
-        #self.lcdNumber_wall_Lspeed.display(wall_msg.data[2])
-        #self.lcdNumber_wall_Rspeed.display(wall_msg.data[3])
+        self.lcdNumber_final_r.display(wall_msg.data[0])
+        self.lcdNumber_final_angle.display(wall_msg.data[1])
+        self.lcdNumber_r_err.display(wall_msg.data[2])
+        self.lcdNumber_angle_err.display(wall_msg.data[3])
+
+    def wallfuzzy_callback(self,msg):
+        for i in range(0,10):
+            self._wallfuzzy_value[i] = msg.data[i]
+        for i in range(0.10):
+            self.lcdNumberWallfuzzyList[i].dispaly(self._wallfuzzy_value[i])
 
 
     def line_callback(self,line_msg):
